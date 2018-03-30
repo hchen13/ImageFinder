@@ -61,8 +61,12 @@ def load_image(url):
     return image
 
 
-def extract_image(element):
+def extract_image(element, save_dir):
     image_url = element.get_attribute('src')
+    filename = "{}.jpg".format(hash(image_url))
+    path = os.path.join(save_dir, filename)
+    if os.path.exists(path):
+        return "exist", image_url
     image = load_image(image_url)
     return image, image_url
 
@@ -103,6 +107,11 @@ def ensure_dir_exists(path):
         os.makedirs(path)
 
 
+def hash(url):
+    from hashlib import md5
+    return md5(url.encode('utf8')).hexdigest()
+
+
 def go(keyword, dir, limit):
     print("Searching the web for images of `{}`...".format(keyword))
     results = search(keyword, limit)
@@ -111,12 +120,16 @@ def go(keyword, dir, limit):
 
     dest_dir = os.path.join(dir, keyword)
     ensure_dir_exists(dest_dir)
-    print("Saving images..")
+    print("Downloading images..")
     errors = 0
 
     for i, result in enumerate(results):
-        image, url = extract_image(result)
-        success = save_image(image, dest_dir, "{}.jpg".format(i))
+        image, url = extract_image(result, dest_dir)
+        if image == 'exists':
+            success = True
+        else:
+            filename = "{}.jpg".format(hash(url))
+            success = save_image(image, dest_dir, filename)
 
         if (i + 1) % 100 == 0:
             print("{} images saved...".format(i + 1))
@@ -125,19 +138,20 @@ def go(keyword, dir, limit):
             print("Error saving image at {}".format(url))
             errors += 1
 
-    print("Saving complete.")
+    print("Download complete.")
     print("Summary:")
     print("Images found: {} | Images saved: {} | Error rate: {:.2f}%\n".format(count, count - errors, errors / count * 100))
 
 
 def batch():
-    root = '/Users/ethan/Pictures/datasets/USA'
+    root = '/Users/ethan/Pictures/datasets/chengdu'
     sights = [
         '都江堰', '峨眉山', '宽窄巷子', '武侯祠', '杜甫草堂', '熊猫基地', '锦里', '九寨沟', '海螺沟', '西岭雪山', '琴台路', '川菜博物馆',
         '春熙路', '文殊院', '青城山', '东郊记忆', '大慈寺', '青羊宫'
     ]
+    # sights = ['武侯祠']
     for sight in sights:
-        go(sight, root, 1000)
+        go(sight, root, 200)
 
 if __name__ == '__main__':
     batch()
