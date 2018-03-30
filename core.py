@@ -133,10 +133,8 @@ def go(keyword, dir, limit):
 def batch():
     root = '/Users/ethan/Pictures/datasets/USA'
     sights = [
-        'empire state building', 'disneyland', 'wall street',
-        'stanford university', 'harvard university', 'golden gate bridge',
-        'the white house', 'capitol hill', 'monument valley',
-        'yosemite', 'hollywood'
+        '都江堰', '峨眉山', '宽窄巷子', '武侯祠', '杜甫草堂', '熊猫基地', '锦里', '九寨沟', '海螺沟', '西岭雪山', '琴台路', '川菜博物馆',
+        '春熙路', '文殊院', '青城山', '东郊记忆', '大慈寺', '青羊宫'
     ]
     for sight in sights:
         go(sight, root, 1000)
